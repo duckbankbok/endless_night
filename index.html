@@ -25,17 +25,6 @@
       80%  { transform: translateY(0);}
       100% { transform: translateY(0);}
     }
-    /* 한 문장은 한 줄로, 넘쳐도 줄바꿈 없이 다 보여주기 */
-    .no-wrap-line {
-      white-space: nowrap;
-      overflow: visible;
-      text-overflow: unset;
-      width: 100%;
-      display: block;
-    }
-    #text-box {
-      overflow: visible !important;
-    }
   </style>
 </head>
 <body class="w-screen h-screen m-0 p-0 overflow-hidden bg-[#232329] select-none">
@@ -58,14 +47,12 @@
     let knife = false;
     let diaryRead = false;
 
-    // 엔딩 컬러 매핑
     const endingColor = {
       "노멀": 'text-green-400',
       "배드": 'text-yellow-300',
       "시크릿": 'text-red-500'
     };
 
-    // 구글시트 주소
     const GOOGLE_SHEET_CSV = "https://docs.google.com/spreadsheets/d/15j_oFaZq0FOealXjH6JiidSTrouYFx9TodUP7pIahQ0/export?format=csv";
     const CSV_URL = "https://corsproxy.io/?" + encodeURIComponent(GOOGLE_SHEET_CSV);
 
@@ -146,18 +133,17 @@
         html += `<img src="${imgSrc}" alt="scene" class="w-full rounded-xl mb-4 max-h-72 object-cover border border-gray-700" style="user-select:none;">`;
       }
 
-      // 본문(엔딩/일반 모두 동일하게 스타일 적용)
       html += `<div id="text-box" class="text-lg font-semibold mb-8 text-white md:whitespace-nowrap whitespace-pre-line md:w-auto md:max-w-none md:overflow-x-visible" style="min-height:3rem; line-height:2; overflow:visible; user-select:none;">`;
       for (let i = 0; i < sceneTextIndex; i++) {
-        html += `<div class="no-wrap-line">${sceneTextBlocks[i]}</div>`;
+        html += sceneTextBlocks[i] + "<br>";
       }
-      html += `<span id="typing-text" class="no-wrap-line"></span>`;
+      html += `<span id="typing-text"></span>`;
       if (showNextIndicator) {
         html += `<span id="next-indicator" class="next-indicator" style="user-select:none;">▼</span>`;
       }
       html += `</div>`;
 
-      // 엔딩이면 엔딩 타이틀/버튼 추가 (타이틀은 한 줄)
+      // 엔딩: 선택지 대신 엔딩 타이틀/처음으로 버튼
       if (isEnding && sceneTextIndex === sceneTextBlocks.length && showChoices) {
         let color = endingColor[scene.ending_type] || 'text-yellow-300';
         html += `<div class="text-2xl font-bold mb-4 ${color}" style="user-select:none; white-space:nowrap;">${scene.ending_title}${scene.ending_type ? ' (' + scene.ending_type + ' 엔딩)' : ''}</div>`;
@@ -302,7 +288,7 @@
       if (!scene || !scene.choices[idx]) return;
 
       if (currentId === "go_kitchen") {
-        if (scene.choices[idx].text.indexOf("식칼을 챙") !== -1) {
+        if (scene.choices[idx].text.indexOf("식칼을 챙긴다.") !== -1) {
           knife = true;
         } else {
           knife = false;
